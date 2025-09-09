@@ -1,0 +1,28 @@
+<div class="container d-flex justify-content-center align-items-center vh-50">
+  <div class="card shadow-sm p-4" style="width: 100%; max-width: 400px">
+    <h3 class="text-center mb-4">Belépés</h3>
+
+    <div class="form-floating mb-3">
+      <input
+        type="email"
+        class="form-control"
+        id="emailField"
+        placeholder="Email cím"
+      />
+      <label for="emailField">Email cím</label>
+    </div>
+    <div class="form-floating mb-4">
+      <input
+        type="password"
+        class="form-control"
+        id="passwordField"
+        placeholder="Jelszó"
+      />
+      <label for="passwordField">Jelszó</label>
+    </div>
+    <button onclick="login()" class="btn btn-primary w-100">
+      Bejelentkezés
+    </button>
+    <h6 class="text-center px-5 py-3 text-danger visually-hidden">Errors</h6>
+  </div>
+</div>
