@@ -4,6 +4,9 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
+const { login } = require("./api/login");
+const { register } = require("./api/register");
+
 const JWT_SECRET = "nagyonTitkosKulcs";
 
 //    adatbázis nyitás egyszer
@@ -20,7 +23,8 @@ let db;
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
       email TEXT UNIQUE,
-      password TEXT
+      password TEXT,
+      imgPath TEXT
     )
   `);
 })();
@@ -35,73 +39,50 @@ app.get("/", (req, res) => {
 });
 
 app.post("/auth/register", async (req, res) => {
-  const data = req.body;
-  const { name, email, password, passwordConfirm } = data;
-
-  if (!name || !email || !password || !passwordConfirm) {
-    return res.status(400).json({ message: "Minden mező kitöltése kötelező!" });
-  }
-
-  if (password !== passwordConfirm) {
-    return res.status(400).json({ message: "A jelszavak nem egyeznek meg!" });
-  }
-
-  const user = await db.get("SELECT * FROM users WHERE email = ?", email);
-  if (user) {
-    return res.status(400).json({ message: "Ez az emailcím már foglalt!" });
-  }
-
-  await db.run(
-    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-    name,
-    email,
-    password
-  );
-
-  const userAfterInsert = await db.get(
-    "SELECT * FROM users WHERE email = ?",
-    email
-  );
-
-  //JWT LÉTREHOZÁSA
-  const token = jwt.sign(
-    { id: userAfterInsert.id, email: userAfterInsert.email },
-    JWT_SECRET,
-    {
-      expiresIn: "12h",
-    }
-  );
-
-  res.status(201).json({ message: "Sikeres regisztráció!", token: token });
+  register(req, res, db, jwt, JWT_SECRET);
 });
 
 app.post("/auth/login", async (req, res) => {
-  const data = req.body;
-  const { email, password } = data;
+  login(req, res, db, jwt, JWT_SECRET);
+});
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Minden mező kitöltése kötelező!" });
+//JWT ellenőrző middleware
+const verifyJWT = (req, res, next) => {
+  const token = req.headers["x-access-token"];
+  if (!token) {
+    return res.status(401).json({ message: "Nincs token megadva!" });
   }
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Érvénytelen token!" });
+    }
+    const specUser = db.run("SELECT * FROM users WHERE id = ?", [decoded.id]);
+    if (!specUser) {
+      return res.status(404).json({ message: "Felhasználó nem található!" });
+    }
+    req.userId = decoded.id;
+    req.userEmail = decoded.email;
+    req.userName = decoded.name;
+    req.imgPath = decoded.imgPath;
 
-  let user = await db.get("SELECT * FROM users WHERE email = ?", email);
-  if (!user) {
-    return res.status(402).json({ message: "Ilyen felhasználó nem létezik!" });
-  }
+    console.log("JWT ellenőrzés sikeres, userId:", decoded.imgPath);
 
-  if (user.password != password) {
-    return res.status(403).json({ message: "Hibás jelszó!" });
-  }
-
-  //JWT LÉTREHOZÁSA
-  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
-    expiresIn: "12h",
+    next();
   });
+};
 
-  // itt majd ellenőrzés az adatbázissal
-  console.log(email + " bejelentkezett");
-  return res
-    .status(200)
-    .json({ message: "Sikeres bejelentkezés!", token: token });
+//Send a test JWT token
+app.get("/verify-jwt", verifyJWT, (req, res) => {
+  const userId = req.userId;
+  // Find user by userId in the database (optional)
+
+  res.json({
+    message: "Sikeres JWT ellenőrzés!",
+    userId: req.userId,
+    userEmail: req.userEmail,
+    userName: req.userName,
+    imgPath: req.imgPath,
+  });
 });
 
 app.listen("3000");

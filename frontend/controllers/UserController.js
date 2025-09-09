@@ -106,11 +106,30 @@ function logout() {
   location.reload();
 }
 
-function getProfile() {
-  return {
-    email: localStorage.getItem("email"),
-    name: localStorage.getItem("name"),
-  };
+async function getProfile() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    setError("Nincs bejelentkezve!");
+    return;
+  }
+  // Send a request to verify the token and get user info
+  const data = await fetch("http://localhost:3000/verify-jwt", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-access-token": token,
+    },
+  });
+
+  if (data.status !== 200) {
+    setError("Érvénytelen token, kérjük jelentkezzen be újra!");
+    logout();
+    return;
+  }
+  const res = await data.json();
+  alert("Sikeres JWT ellenőrzés! UserID: " + res.userId);
+
+  handleView("profile");
 }
 
 function updateProfile() {}
