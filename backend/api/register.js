@@ -1,7 +1,8 @@
 export async function register(req, res, db, jwt, JWT_SECRET) {
-  const passwdRegex =
-    "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*W)(?!.* ).{8,16}$";
-  const emailRegex = "/^[^s@]+@[^s@]+.[^s@]+$/";
+  const passwdRegex = new RegExp(
+    /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/
+  );
+  const emailRegex = new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
   const data = req.body;
   const { name, email, password, passwordConfirm } = data;
 
@@ -13,7 +14,6 @@ export async function register(req, res, db, jwt, JWT_SECRET) {
     return res.status(400).json({ message: "A jelszavak nem egyeznek meg!" });
   }
 
-  /*
   if (!password.match(passwdRegex)) {
     return res.status(400).json({
       message:
@@ -23,7 +23,7 @@ export async function register(req, res, db, jwt, JWT_SECRET) {
 
   if (!email.match(emailRegex)) {
     return res.status(400).json({ message: "Érvénytelen email cím!" });
-  }*/
+  }
 
   const user = await db.get("SELECT * FROM users WHERE email = ?", email);
   if (user) {

@@ -1,9 +1,40 @@
 let error = "";
 
 const setError = (err) => {
-  error = err;
-  document.querySelector("h6").classList.remove("visually-hidden");
-  document.querySelector("h6").innerText = error;
+  const alertPlaceholder = document.getElementById("myAlert");
+
+  alertPlaceholder.innerHTML = `
+    <div class="alert alert-danger alert-dismissible fade show shadow-lg" role="alert">
+      ${err}
+    </div>
+  `;
+
+  setTimeout(() => {
+    const alertEl = alertPlaceholder.querySelector(".alert");
+    if (alertEl) {
+      const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+      bsAlert.close();
+    }
+  }, 3000);
+};
+
+const setSuccess = (msg) => {
+  const alertPlaceholder = document.getElementById("myAlert");
+
+  alertPlaceholder.innerHTML = `
+    <div class="alert alert-success alert-dismissible fade show shadow-lg" role="alert">
+      ${msg}
+    </div>
+  `;
+
+  setTimeout(() => {
+    const alertEl = alertPlaceholder.querySelector(".alert");
+    if (alertEl) {
+      const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+      bsAlert.close();
+      location.reload();
+    }
+  }, 1000);
 };
 
 const clearError = () => {
@@ -71,7 +102,7 @@ async function register() {
 
   const res = await data.json();
   saveDataToLocal(res.token, registeringEmail, registeringName);
-  alert("Sikeresen beléptél. Tokened: " + res.token);
+  setSuccess("Sikeres regisztráció!");
 }
 
 async function login() {
@@ -93,10 +124,9 @@ async function login() {
   }
 
   const data = await res.json();
-  alert("Sikeresen beléptél. Tokened: " + data.token);
+
   saveDataToLocal(data.token, loggingEmail, "Felhasználó");
-  // oldal újratöltése
-  location.reload();
+  setSuccess("Sikeres bejelentkezés!");
 }
 
 function logout() {

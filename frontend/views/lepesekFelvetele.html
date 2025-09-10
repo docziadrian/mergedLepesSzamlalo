@@ -1,0 +1,209 @@
+<!-- LÉPÉSEK FELVÉTELE -->
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="card shadow-lg border-0 rounded-4 mt-4 mb-5">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top-4">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        
+                        <h1 class="card-title mb-0 fw-bold">Lépések Felvétele</h1>
+                    </div>
+                    <p class="mb-0 opacity-75">Rögzítsd napi lépéseidet és kövesd figyelemmel az egészséges életmódot!</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Nap kiválasztása -->
+                    <div class="mb-4">
+                        <label for="selectedDate" class="form-label fw-semibold text-muted">
+                            <i class="bi bi-calendar3 me-2"></i>Dátum
+                        </label>
+                        <input type="date" class="form-control form-control-lg border-2 rounded-3" id="selectedDate">
+                    </div>
+
+                    <!-- Lépések input -->
+                    <div class="mb-4">
+                        <label for="lepesek" class="form-label fw-semibold text-muted">
+                            <i class="bi bi-shoe-prints me-2"></i>Lépések száma
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <input type="number" 
+                                   class="form-control form-control-lg border-2 rounded-start-3" 
+                                   id="lepesek" 
+                                   placeholder="0"
+                                   min="0"
+                                   max="100000"
+                                   step="1">
+                            
+                        </div>
+                        
+                    </div>
+
+
+
+                    <!-- Művelet gombok -->
+                    <div class="d-grid gap-3">
+                        <button type="button" 
+                                class="btn btn-primary btn-lg rounded-3 py-3 fw-semibold"
+                                onclick="saveSteps()"
+                                id="saveBtn">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Lépések Mentése
+                        </button>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast üzenetek -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong class="me-auto">Siker!</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Lépések sikeresen mentve!
+        </div>
+    </div>
+    
+    <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong class="me-auto">Hiba!</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Hiba történt a mentés során!
+        </div>
+    </div>
+</div>
+
+<script>
+// JavaScript funkcionalitás
+document.addEventListener('DOMContentLoaded', function() {
+    // Alapértelmezett dátum beállítása (ma)
+    document.getElementById('selectedDate').valueAsDate = new Date();
+    
+    // Lépések input validálása
+    const stepsInput = document.getElementById('lepesek');
+    stepsInput.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        if (value > 0) {
+            updateMotivationMessage(value);
+        }
+    });
+});
+
+function setSteps(steps) {
+    document.getElementById('lepesek').value = steps;
+    updateMotivationMessage(steps);
+}
+
+function updateMotivationMessage(steps) {
+    const messageEl = document.getElementById('motivationMessage');
+    let message = '';
+    
+    if (steps >= 15000) {
+        message = '<i class="bi bi-trophy me-2 text-warning"></i>Fantasztikus! Túlteljesítetted a napi célt!';
+    } else if (steps >= 10000) {
+        message = '<i class="bi bi-star me-2 text-success"></i>Kiváló! Elérted a napi célt!';
+    } else if (steps >= 8000) {
+        message = '<i class="bi bi-heart-pulse me-2 text-primary"></i>Jó munkát! Közel vagy a célhoz!';
+    } else if (steps >= 5000) {
+        message = '<i class="bi bi-arrow-up me-2 text-info"></i>Szép kezdés! Próbálj még többet sétálni!';
+    } else {
+        message = '<i class="bi bi-heart-pulse me-2 text-danger"></i>Minden lépés számít az egészségedért!';
+    }
+    
+    messageEl.innerHTML = message;
+}
+
+function saveSteps() {
+    const steps = document.getElementById('lepesek').value;
+    const date = document.getElementById('selectedDate').value;
+    
+    if (!steps || steps <= 0) {
+        showErrorToast('Kérlek adj meg egy érvényes lépésszámot!');
+        return;
+    }
+    
+    // Itt történne az API hívás
+    console.log('Mentés:', { steps: parseInt(steps), date: date });
+    
+    // Sikeres mentés szimulálása
+    showSuccessToast('Lépések sikeresen mentve!');
+    
+    // Form törlése
+    document.getElementById('lepesek').value = '';
+    updateMotivationMessage(0);
+}
+
+function clearSteps() {
+    document.getElementById('lepesek').value = '';
+    updateMotivationMessage(0);
+}
+
+function showHistory() {
+    // Itt történne az előzmények megjelenítése
+    console.log('Előzmények megjelenítése');
+}
+
+function showSuccessToast(message) {
+    const toast = new bootstrap.Toast(document.getElementById('successToast'));
+    document.querySelector('#successToast .toast-body').textContent = message;
+    toast.show();
+}
+
+function showErrorToast(message) {
+    const toast = new bootstrap.Toast(document.getElementById('errorToast'));
+    document.querySelector('#errorToast .toast-body').textContent = message;
+    toast.show();
+}
+</script>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #696969 0%, #000000 100%);
+}
+
+
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.input-group-text {
+    transition: all 0.3s ease;
+}
+
+.input-group:focus-within .input-group-text {
+    background-color: #667eea !important;
+    color: white !important;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+
+</style>

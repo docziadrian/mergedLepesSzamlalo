@@ -3,6 +3,12 @@ const navbarElem = document.getElementById("navbarElem");
 const token = localStorage.getItem("token");
 if (token) {
   navbarElem.innerHTML = `
+  <li class="nav-item">
+      <a id="lepesekFelveteleMenu" class="nav-link" href="#">Lépések Felvétele</a>
+    </li>
+    <li class="nav-item">
+      <a id="lepesekMegtekinteseMenu" class="nav-link" href="#">Lépések Megtekintése</a>
+    </li>
     <li class="nav-item">
       <a id="kilepesMenu" class="nav-link" href="#">Kilépés</a>
     </li>
@@ -26,10 +32,24 @@ if (token) {
 
 const kilepesMenu = document.getElementById("kilepesMenu");
 const profilMenu = document.getElementById("profilMenu");
+const lepesekFelveteleMenu = document.getElementById("lepesekFelveteleMenu");
+const lepesekMegtekinteseMenu = document.getElementById("lepesekMegtekinteseMenu");
 if (profilMenu) {
   profilMenu.addEventListener("click", (e) => {
     e.preventDefault();
     const profile = getProfile();
+  });
+}
+if (lepesekFelveteleMenu) {
+  lepesekFelveteleMenu.addEventListener("click", (e) => {
+    e.preventDefault();
+    handleView("lepesekFelvetele");
+  });
+}
+if (lepesekMegtekinteseMenu) {
+  lepesekMegtekinteseMenu.addEventListener("click", (e) => {
+    e.preventDefault();
+    handleView("lepesekMegtekintese");
   });
 }
 if (kilepesMenu) {
