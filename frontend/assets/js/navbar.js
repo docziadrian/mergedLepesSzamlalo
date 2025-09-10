@@ -33,7 +33,9 @@ if (token) {
 const kilepesMenu = document.getElementById("kilepesMenu");
 const profilMenu = document.getElementById("profilMenu");
 const lepesekFelveteleMenu = document.getElementById("lepesekFelveteleMenu");
-const lepesekMegtekinteseMenu = document.getElementById("lepesekMegtekinteseMenu");
+const lepesekMegtekinteseMenu = document.getElementById(
+  "lepesekMegtekinteseMenu"
+);
 if (profilMenu) {
   profilMenu.addEventListener("click", (e) => {
     e.preventDefault();
@@ -47,9 +49,10 @@ if (lepesekFelveteleMenu) {
   });
 }
 if (lepesekMegtekinteseMenu) {
-  lepesekMegtekinteseMenu.addEventListener("click", (e) => {
+  lepesekMegtekinteseMenu.addEventListener("click", async (e) => {
     e.preventDefault();
     handleView("lepesekMegtekintese");
+    await getDatas();
   });
 }
 if (kilepesMenu) {

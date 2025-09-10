@@ -38,11 +38,12 @@ export async function register(req, res, db, jwt, JWT_SECRET) {
   var imgPath = generateRandomImagePath();
 
   await db.run(
-    "INSERT INTO users (name, email, password, imgPath) VALUES (?, ?, ?, ?)",
+    "INSERT INTO users (name, email, password, imgPath, stepInfos) VALUES (?, ?, ?, ?, ?)",
     name,
     email,
     password,
-    imgPath
+    imgPath,
+    ""
   );
 
   const userAfterInsert = await db.get(
@@ -56,6 +57,7 @@ export async function register(req, res, db, jwt, JWT_SECRET) {
       id: userAfterInsert.id,
       email: userAfterInsert.email,
       imgPath: userAfterInsert.imgPath,
+      stepInfos: userAfterInsert.stepInfos,
     },
     JWT_SECRET,
     {

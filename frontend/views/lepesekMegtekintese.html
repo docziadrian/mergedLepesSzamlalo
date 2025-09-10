@@ -1,571 +1,191 @@
 <!-- LÉPÉSEK MEGTEKINTÉSE -->
 <div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
-            <!-- Header -->
-            <div class="card shadow-lg border-0 rounded-4 mt-4 mb-4">
-                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top-4">
-                    <div class="d-flex align-items-center justify-content-center mb-3">
-                        <h1 class="card-title mb-0 fw-bold">Lépések Megtekintése</h1>
-                    </div>
-                    <p class="mb-0 opacity-75">Elemezd lépéseidet és kövesd figyelemmel az egészséges életmód fejlődését!</p>
-                </div>
-            </div>
-
-            <!-- View Toggle -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-center mb-4">
-                        <div class="btn-group" role="group" aria-label="View toggle">
-                            <button type="button" 
-                                    class="btn btn-outline-primary active" 
-                                    id="tableViewBtn"
-                                    onclick="showTableView()">
-                                <i class="bi bi-table me-2"></i>Táblázat
-                            </button>
-                            <button type="button" 
-                                    class="btn btn-outline-primary" 
-                                    id="chartViewBtn"
-                                    onclick="showChartView()">
-                                <i class="bi bi-bar-chart me-2"></i>Diagram
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Date Range Selector -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label for="startDate" class="form-label fw-semibold">
-                                <i class="bi bi-calendar-event me-2"></i>Kezdő dátum
-                            </label>
-                            <input type="date" class="form-control border-2 rounded-3" id="startDate">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="endDate" class="form-label fw-semibold">
-                                <i class="bi bi-calendar-event-fill me-2"></i>Vég dátum
-                            </label>
-                            <input type="date" class="form-control border-2 rounded-3" id="endDate">
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="button" 
-                                    class="btn btn-primary w-100 rounded-3"
-                                    onclick="filterData()">
-                                <i class="bi bi-funnel me-2"></i>Szűrés
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Quick Filter Buttons -->
-                    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-                        <button type="button" class="btn btn-outline-secondary rounded-3" onclick="setDateRange('today')">
-                            <i class="bi bi-calendar-day me-1"></i>Ma
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary rounded-3" onclick="setDateRange('week')">
-                            <i class="bi bi-calendar-week me-1"></i>Ez a hét
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary rounded-3" onclick="setDateRange('month')">
-                            <i class="bi bi-calendar-month me-1"></i>Ez a hónap
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary rounded-3" onclick="setDateRange('all')">
-                            <i class="bi bi-calendar-check me-1"></i>Összes
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Statistics Cards -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <div class="card border-0 bg-gradient-info text-white rounded-4 h-100">
-                        <div class="card-body p-4 text-center">
-                            <i class="bi bi-graph-up fs-1 mb-3"></i>
-                            <div class="fs-3 fw-bold" id="totalSteps">0</div>
-                            <div class="opacity-75">Összes lépés</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 bg-gradient-success text-white rounded-4 h-100">
-                        <div class="card-body p-4 text-center">
-                            <i class="bi bi-calendar-check fs-1 mb-3"></i>
-                            <div class="fs-3 fw-bold" id="activeDays">0</div>
-                            <div class="opacity-75">Aktív napok</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 bg-gradient-warning text-white rounded-4 h-100">
-                        <div class="card-body p-4 text-center">
-                            <i class="bi bi-speedometer2 fs-1 mb-3"></i>
-                            <div class="fs-3 fw-bold" id="averageSteps">0</div>
-                            <div class="opacity-75">Átlagos lépések</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 bg-gradient-danger text-white rounded-4 h-100">
-                        <div class="card-body p-4 text-center">
-                            <i class="bi bi-trophy fs-1 mb-3"></i>
-                            <div class="fs-3 fw-bold" id="bestDay">0</div>
-                            <div class="opacity-75">Legjobb nap</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table View -->
-            <div id="tableView" class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-header bg-light border-0 rounded-top-4 py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-table me-2"></i>Lépések Táblázata
-                        </h5>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-secondary" onclick="exportData('csv')">
-                                <i class="bi bi-download me-1"></i>CSV
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="exportData('pdf')">
-                                <i class="bi bi-file-pdf me-1"></i>PDF
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="border-0">
-                                        <i class="bi bi-calendar3 me-2"></i>Dátum
-                                    </th>
-                                    <th class="border-0">
-                                        <i class="bi bi-shoe-prints me-2"></i>Lépések
-                                    </th>
-                                    <th class="border-0">
-                                        <i class="bi bi-speedometer2 me-2"></i>Átlag
-                                    </th>
-                                    <th class="border-0">
-                                        <i class="bi bi-graph-up me-2"></i>Trend
-                                    </th>
-                                    <th class="border-0">
-                                        <i class="bi bi-award me-2"></i>Teljesítés
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="stepsTableBody">
-                                <!-- Sample data - will be populated by JavaScript -->
-                                <tr>
-                                    <td>2024-01-15</td>
-                                    <td><span class="badge bg-primary fs-6">8,500</span></td>
-                                    <td>8,200</td>
-                                    <td><i class="bi bi-arrow-up text-success"></i></td>
-                                    <td><span class="badge bg-success">Cél elérve</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2024-01-14</td>
-                                    <td><span class="badge bg-primary fs-6">12,300</span></td>
-                                    <td>8,100</td>
-                                    <td><i class="bi bi-arrow-up text-success"></i></td>
-                                    <td><span class="badge bg-warning">Túlteljesítés</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2024-01-13</td>
-                                    <td><span class="badge bg-primary fs-6">6,800</span></td>
-                                    <td>7,900</td>
-                                    <td><i class="bi bi-arrow-down text-danger"></i></td>
-                                    <td><span class="badge bg-danger">Cél alatt</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chart View -->
-            <div id="chartView" class="card border-0 shadow-sm rounded-4 mb-4" style="display: none;">
-                <div class="card-header bg-light border-0 rounded-top-4 py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-semibold">
-                            <i class="bi bi-bar-chart me-2"></i>Lépések Diagramja
-                        </h5>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-secondary" onclick="changeChartType('line')">
-                                <i class="bi bi-graph-up me-1"></i>Vonal
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="changeChartType('bar')">
-                                <i class="bi bi-bar-chart me-1"></i>Oszlop
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="changeChartType('area')">
-                                <i class="bi bi-graph-up-arrow me-1"></i>Terület
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    <canvas id="stepsChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-
-            <!-- Goals Progress -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-header bg-light border-0 rounded-top-4 py-3">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="bi bi-bullseye me-2"></i>Célok Teljesítése
-                    </h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-semibold">Napi cél (10,000 lépés)</span>
-                                <span class="text-muted" id="dailyGoalProgress">75%</span>
-                            </div>
-                            <div class="progress rounded-3" style="height: 10px;">
-                                <div class="progress-bar bg-gradient-success" 
-                                     role="progressbar" 
-                                     style="width: 75%" 
-                                     aria-valuenow="75" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-semibold">Heti cél (70,000 lépés)</span>
-                                <span class="text-muted" id="weeklyGoalProgress">85%</span>
-                            </div>
-                            <div class="progress rounded-3" style="height: 10px;">
-                                <div class="progress-bar bg-gradient-primary" 
-                                     role="progressbar" 
-                                     style="width: 85%" 
-                                     aria-valuenow="85" 
-                                     aria-valuemin="0" 
-                                     aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+      <!-- Header -->
+      <div class="card shadow-lg border-0 rounded-4 mt-4 mb-4">
+        <div class="card-header text-white text-center py-4 rounded-top-4">
+          <div class="d-flex align-items-center justify-content-center mb-3">
+            <h1 class="card-title mb-0 fw-bold">Lépések Megtekintése</h1>
+          </div>
+          <p class="mb-0 opacity-75">
+            Elemezd lépéseidet és kövesd figyelemmel az egészséges életmód
+            fejlődését!
+          </p>
         </div>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group" role="group" aria-label="View toggle">
+              <button
+                type="button"
+                class="btn btn-outline-primary active"
+                id="tableViewBtn"
+                onclick="showTableView()"
+              >
+                <i class="bi bi-table me-2"></i>Táblázat
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                id="chartViewBtn"
+                onclick="showChartView()"
+              >
+                <i class="bi bi-bar-chart me-2"></i>Diagram
+              </button>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label for="startDate" class="form-label fw-semibold">
+                <i class="bi bi-calendar-event me-2"></i>Kezdő dátum
+              </label>
+              <input
+                type="date"
+                class="form-control border-2 rounded-3"
+                id="startDate"
+              />
+            </div>
+            <div class="col-md-4">
+              <label for="endDate" class="form-label fw-semibold">
+                <i class="bi bi-calendar-event-fill me-2"></i>Vég dátum
+              </label>
+              <input
+                type="date"
+                class="form-control border-2 rounded-3"
+                id="endDate"
+              />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <button
+                type="button"
+                class="btn btn-primary w-100 rounded-3"
+                onclick="filterData()"
+              >
+                <i class="bi bi-funnel me-2"></i>Szűrés
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Nézet -->
+      <div id="tableView" class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-dark border-0 rounded-top-4 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-semibold">
+              <i class="bi bi-table me-2"></i>Lépések Táblázata
+            </h5>
+            <div class="btn-group btn-group-sm" role="group">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="exportData('csv')"
+              >
+                <i class="bi bi-download me-1"></i>CSV
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="exportData('pdf')"
+              >
+                <i class="bi bi-file-pdf me-1"></i>PDF
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="border-0">
+                    <i class="bi bi-calendar3 me-2"></i>Dátum
+                  </th>
+                  <th class="border-0">
+                    <i class="bi bi-shoe-prints me-2"></i>Lépések
+                  </th>
+                  <th class="border-0">
+                    <i class="bi bi-speedometer2 me-2"></i>Átlag
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="stepsTableBody">
+                <tr>
+                  <td>2024-01-15</td>
+                  <td><span class="badge bg-primary fs-6">8,500</span></td>
+                  <td>8,200</td>
+                </tr>
+                <tr>
+                  <td>2024-01-14</td>
+                  <td><span class="badge bg-primary fs-6">12,300</span></td>
+                  <td>8,100</td>
+                </tr>
+                <tr>
+                  <td>2024-01-13</td>
+                  <td><span class="badge bg-primary fs-6">6,800</span></td>
+                  <td>7,900</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Nézet -->
+      <div
+        id="chartView"
+        class="card border-0 shadow-sm rounded-4 mb-4"
+        style="display: none"
+      >
+        <div class="card-header bg-dark border-0 rounded-top-4 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-semibold">
+              <i class="bi bi-bar-chart me-2"></i>Lépések Diagramja
+            </h5>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <canvas id="myChart" style="width: 100%; max-width: 100%"></canvas>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-let stepsChart = null;
-let currentChartType = 'line';
-
-// Sample data - replace with real data from API
-const sampleData = {
-    dates: ['2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-13', '2024-01-14'],
-    steps: [8500, 9200, 7800, 10500, 12300, 6800, 12300],
-    average: [8200, 8300, 8100, 8500, 8900, 8100, 8500]
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Set default date range (last 7 days)
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7);
-    
-    document.getElementById('startDate').valueAsDate = startDate;
-    document.getElementById('endDate').valueAsDate = endDate;
-    
-    // Initialize chart
-    initializeChart();
-    
-    // Load initial data
-    loadData();
-});
-
-function showTableView() {
-    document.getElementById('tableView').style.display = 'block';
-    document.getElementById('chartView').style.display = 'none';
-    document.getElementById('tableViewBtn').classList.add('active');
-    document.getElementById('chartViewBtn').classList.remove('active');
-}
-
-function showChartView() {
-    document.getElementById('tableView').style.display = 'none';
-    document.getElementById('chartView').style.display = 'block';
-    document.getElementById('tableViewBtn').classList.remove('active');
-    document.getElementById('chartViewBtn').classList.add('active');
-}
-
-function setDateRange(range) {
-    const endDate = new Date();
-    const startDate = new Date();
-    
-    switch(range) {
-        case 'today':
-            startDate.setDate(endDate.getDate());
-            break;
-        case 'week':
-            startDate.setDate(endDate.getDate() - 7);
-            break;
-        case 'month':
-            startDate.setMonth(endDate.getMonth() - 1);
-            break;
-        case 'all':
-            startDate.setFullYear(2024, 0, 1);
-            break;
-    }
-    
-    document.getElementById('startDate').valueAsDate = startDate;
-    document.getElementById('endDate').valueAsDate = endDate;
-    
-    filterData();
-}
-
-function filterData() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    
-    console.log('Filtering data from', startDate, 'to', endDate);
-    
-    // Here you would make an API call to get filtered data
-    loadData();
-}
-
-function loadData() {
-    // Update statistics
-    updateStatistics();
-    
-    // Update table
-    updateTable();
-    
-    // Update chart
-    updateChart();
-}
-
-function updateStatistics() {
-    const totalSteps = sampleData.steps.reduce((sum, steps) => sum + steps, 0);
-    const activeDays = sampleData.steps.filter(steps => steps > 0).length;
-    const averageSteps = Math.round(totalSteps / activeDays);
-    const bestDay = Math.max(...sampleData.steps);
-    
-    document.getElementById('totalSteps').textContent = totalSteps.toLocaleString();
-    document.getElementById('activeDays').textContent = activeDays;
-    document.getElementById('averageSteps').textContent = averageSteps.toLocaleString();
-    document.getElementById('bestDay').textContent = bestDay.toLocaleString();
-}
-
-function updateTable() {
-    const tbody = document.getElementById('stepsTableBody');
-    tbody.innerHTML = '';
-    
-    sampleData.dates.forEach((date, index) => {
-        const steps = sampleData.steps[index];
-        const avg = sampleData.average[index];
-        const trend = index > 0 ? (steps > sampleData.steps[index - 1] ? 'up' : 'down') : 'up';
-        const performance = steps >= 10000 ? 'success' : steps >= 8000 ? 'warning' : 'danger';
-        const performanceText = steps >= 10000 ? 'Cél elérve' : steps >= 8000 ? 'Közel a célhoz' : 'Cél alatt';
-        
-        const row = `
-            <tr>
-                <td>${date}</td>
-                <td><span class="badge bg-primary fs-6">${steps.toLocaleString()}</span></td>
-                <td>${avg.toLocaleString()}</td>
-                <td><i class="bi bi-arrow-${trend} text-${trend === 'up' ? 'success' : 'danger'}"></i></td>
-                <td><span class="badge bg-${performance}">${performanceText}</span></td>
-            </tr>
-        `;
-        tbody.innerHTML += row;
-    });
-}
-
-function initializeChart() {
-    const ctx = document.getElementById('stepsChart').getContext('2d');
-    
-    stepsChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: sampleData.dates.map(date => new Date(date).toLocaleDateString('hu-HU')),
-            datasets: [{
-                label: 'Lépések',
-                data: sampleData.steps,
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                borderWidth: 3,
-                fill: false,
-                tension: 0.4,
-                pointBackgroundColor: '#667eea',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 6,
-                pointHoverRadius: 8
-            }, {
-                label: 'Átlag',
-                data: sampleData.average,
-                borderColor: '#f093fb',
-                backgroundColor: 'rgba(240, 147, 251, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4,
-                borderDash: [5, 5],
-                pointBackgroundColor: '#f093fb',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        font: {
-                            size: 14,
-                            weight: 'bold'
-                        }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    borderColor: '#667eea',
-                    borderWidth: 1,
-                    cornerRadius: 8,
-                    displayColors: true,
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' lépés';
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)',
-                        drawBorder: false
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString();
-                        },
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                }
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            }
-        }
-    });
-}
-
-function updateChart() {
-    if (stepsChart) {
-        stepsChart.data.labels = sampleData.dates.map(date => new Date(date).toLocaleDateString('hu-HU'));
-        stepsChart.data.datasets[0].data = sampleData.steps;
-        stepsChart.data.datasets[1].data = sampleData.average;
-        stepsChart.update();
-    }
-}
-
-function changeChartType(type) {
-    currentChartType = type;
-    
-    if (stepsChart) {
-        let chartConfig = {
-            type: type,
-            data: stepsChart.data,
-            options: stepsChart.options
-        };
-        
-        // Adjust configuration based on chart type
-        if (type === 'area') {
-            chartConfig.data.datasets[0].fill = true;
-            chartConfig.data.datasets[0].backgroundColor = 'rgba(102, 126, 234, 0.3)';
-            chartConfig.data.datasets[1].fill = true;
-            chartConfig.data.datasets[1].backgroundColor = 'rgba(240, 147, 251, 0.3)';
-        } else {
-            chartConfig.data.datasets[0].fill = false;
-            chartConfig.data.datasets[1].fill = false;
-        }
-        
-        stepsChart.destroy();
-        stepsChart = new Chart(document.getElementById('stepsChart').getContext('2d'), chartConfig);
-    }
-}
-
-function exportData(format) {
-    console.log(`Exporting data as ${format}`);
-    // Here you would implement actual export functionality
-    alert(`${format.toUpperCase()} export funkció hamarosan elérhető!`);
-}
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
 <style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #696969 0%, #000000 100%);
-}
-
-.bg-gradient-info {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-}
-
-.bg-gradient-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-}
-
-.bg-gradient-warning {
-    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-}
-
-.bg-gradient-danger {
-    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
-}
-
-.card {
+  .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+  }
 
-.btn {
+  .btn {
     transition: all 0.3s ease;
-}
+  }
 
-.form-control:focus {
+  .form-control:focus {
     border-color: #696969;
     box-shadow: 0 0 0 0.2rem rgba(105, 105, 105, 0.25);
-}
+  }
 
-.table-hover tbody tr:hover {
+  .table-hover tbody tr:hover {
     background-color: rgba(105, 105, 105, 0.05);
-}
+  }
 
-.progress {
+  .progress {
     background-color: rgba(105, 105, 105, 0.1);
-}
+  }
 
-.badge {
+  .badge {
     font-size: 0.875em;
-}
+  }
 
-#stepsChart {
+  #stepsChart {
     max-height: 400px;
-}
+  }
 </style>

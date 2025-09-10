@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 
 const { login } = require("./api/login");
 const { register } = require("./api/register");
+const { createStep } = require("./api/createStep");
+const { getSteps } = require("./api/getSteps");
 
 const JWT_SECRET = "nagyonTitkosKulcs";
 
@@ -18,15 +20,27 @@ let db;
   });
 
   // ha nincs users tábla, létrehozzuk
+
+  //stepInfos: id, steps, date
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
       email TEXT UNIQUE,
       password TEXT,
-      imgPath TEXT
+      imgPath TEXT,
+      stepInfos TEXT
     )
   `);
+
+  await db.exec(`
+      CREATE TABLE IF NOT EXISTS steps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userID INTEGER,
+        steps INTEGER,
+        date TEXT
+      )
+    `);
 })();
 
 const app = express();
@@ -44,6 +58,15 @@ app.post("/auth/register", async (req, res) => {
 
 app.post("/auth/login", async (req, res) => {
   login(req, res, db, jwt, JWT_SECRET);
+});
+
+app.post("/user/newStep", async (req, res) => {
+  createStep(req, res, db, jwt, JWT_SECRET);
+});
+
+app.get("/user/getSteps/:id", async (req, res) => {
+  const userID = req.params.id;
+  getSteps(req, res, db, jwt, JWT_SECRET, userID);
 });
 
 //JWT ellenőrző middleware
@@ -64,8 +87,9 @@ const verifyJWT = (req, res, next) => {
     req.userEmail = decoded.email;
     req.userName = decoded.name;
     req.imgPath = decoded.imgPath;
+    req.stepInfos = decoded.stepInfos;
 
-    console.log("JWT ellenőrzés sikeres, userId:", decoded.imgPath);
+    console.log("JWT ellenőrzés sikeres, userId:", decoded.stepInfos);
 
     next();
   });
@@ -82,6 +106,7 @@ app.get("/verify-jwt", verifyJWT, (req, res) => {
     userEmail: req.userEmail,
     userName: req.userName,
     imgPath: req.imgPath,
+    stepInfos: req.stepInfos,
   });
 });
 

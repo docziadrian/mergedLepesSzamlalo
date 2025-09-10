@@ -17,7 +17,12 @@ export async function login(req, res, db, jwt, JWT_SECRET) {
 
   //JWT LÉTREHOZÁSA
   const token = jwt.sign(
-    { id: user.id, email: user.email, imgPath: user.imgPath },
+    {
+      id: user.id,
+      email: user.email,
+      imgPath: user.imgPath,
+      stepInfos: user.stepInfos,
+    },
     JWT_SECRET,
     {
       expiresIn: "12h",

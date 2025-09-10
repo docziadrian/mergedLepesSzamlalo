@@ -19,7 +19,7 @@ async function getProfileFrontend() {
   }
   const res = await data.json();
 
-  const { userEmail, userId, imgPath } = res;
+  const { userEmail, userId, imgPath, stepInfos } = res;
   if (!userEmail || !userId) {
     setError("Hibás válasz a szervertől!");
     logout();

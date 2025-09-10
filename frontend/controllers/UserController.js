@@ -142,7 +142,6 @@ async function getProfile() {
     setError("Nincs bejelentkezve!");
     return;
   }
-  // Send a request to verify the token and get user info
   const data = await fetch("http://localhost:3000/verify-jwt", {
     method: "GET",
     headers: {

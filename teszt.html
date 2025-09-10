@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <body>
+    <canvas id="myChart" style="width: 100%; max-width: 600px"></canvas>
+
+    <script>
+      let sampleData = {
+        dates: [
+          "2024-01-08",
+          "2024-01-09",
+          "2024-01-10",
+          "2024-01-11",
+          "2024-01-12",
+          "2024-01-13",
+          "2024-01-14",
+        ],
+        steps: [8500, 9200, 7800, 10500, 12300, 6800, 12300],
+        average: [8200, 8300, 8100, 8500, 8900, 8100, 8500],
+      };
+
+      const xValues = sampleData.dates;
+
+      new Chart("myChart", {
+        type: "line",
+        data: {
+          labels: xValues,
+          datasets: [
+            {
+              data: sampleData.steps,
+              borderColor: "green",
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          legend: { display: false },
+        },
+      });
+    </script>
+  </body>
+</html>
